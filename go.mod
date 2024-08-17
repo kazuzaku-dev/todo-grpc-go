@@ -3,6 +3,7 @@ module github.com/kazuzaku-dev/todo-grpc-go
 go 1.22.4
 
 require (
+	github.com/google/wire v0.6.0
 	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2
 )
