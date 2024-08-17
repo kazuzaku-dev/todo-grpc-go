@@ -6,7 +6,7 @@ COPY . /app
 WORKDIR /app
 
 RUN go mod download
-RUN go build -o /go/bin/store-staff cmd/main.go
+RUN go build -o /go/bin/todo cmd/main.go
 
 # Runner
 FROM alpine:latest AS runner
