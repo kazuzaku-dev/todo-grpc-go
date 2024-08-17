@@ -1,0 +1,53 @@
+syntax = "proto3";
+package kazuzaku.dev.user;
+
+option go_package = "./grpc";
+
+// ToDoのサービスのユーザー情報管理
+service UserService {
+  // ユーザーを作成する
+  rpc Create(User) returns (CreateUserResponse) {}
+  // ユーザーを更新する
+  rpc Update(User) returns (UpdateUserResponse) {}
+  // ユーザーを削除する
+  rpc Delete(User) returns (DeleteUserResponse) {}
+
+  // ユーザーを取得する
+  rpc Get(GetUserRequest) returns (User) {}
+  // ユーザーを一覧取得する
+  rpc List(GetUserListRequest) returns (GetUserListResponse) {}
+}
+
+message User {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string password = 4;
+}
+
+message CreateUserResponse {
+  string id = 1;
+}
+
+message UpdateUserResponse {
+  string id = 1;
+}
+
+message DeleteUserResponse {
+  string id = 1;
+}
+
+message GetUserRequest {
+  string id = 1;
+}
+
+message GetUserListRequest {
+    string name = 1;
+    string email = 2;
+    int32 page = 3;
+    int32 limit = 4;
+}
+
+message GetUserListResponse {
+    repeated User users = 1;
+}
