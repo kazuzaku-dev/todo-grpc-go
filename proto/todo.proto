@@ -1,0 +1,78 @@
+syntax = "proto3";
+package kazuzaku.dev.todo;
+
+option go_package = "./grpc";
+
+import "user.proto";
+
+// ToDoのサービス
+service ToDoServie {
+  // ToDoを作成する
+  rpc Create(ToDo) returns (CreateToDoResponse) {}
+  // ToDoを更新する
+  rpc Update(ToDo) returns (UpdateToDoResponse) {}
+  // ToDoを削除する
+  rpc Delete(ToDo) returns (DeleteToDoResponse) {}
+
+  // ToDoを取得する
+  rpc Get(GetToDoRequest) returns (ToDo) {}
+  // ToDoを一覧取得する
+  rpc List(GetToDoListRequest) returns (GetToDoListResponse) {}
+}
+
+// ToDoのメッセージ
+message ToDo {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  Status status = 4;
+  kazuzaku.dev.user.User assign = 5;
+}
+
+// ToDoのステータス
+enum Status {
+  STATUS_UNKNOWN = 0;
+  STATUS_TODO = 1;
+  STATUS_DOING = 2;
+  STATUS_DONE = 3;
+}
+
+/*
+  Command系
+*/
+
+message CreateToDoResponse {
+  string id = 1;
+}
+
+message UpdateToDoResponse {
+  string id = 1;
+}
+
+message DeleteToDoRequest {
+  string id = 1;
+}
+
+message DeleteToDoResponse {
+  string id = 1;
+}
+
+/*
+  Query系
+*/
+
+message GetToDoRequest {
+  string id = 1;
+}
+
+message GetToDoListRequest {
+    string title = 1;
+    Status status = 2;
+    int32 page = 3;
+    int32 limit = 4;
+}
+
+message GetToDoListResponse {
+  repeated ToDo todos = 1;
+}
+
