@@ -8,12 +8,21 @@ package todo
 
 import (
 	"github.com/kazuzaku-dev/todo-grpc-go/internal/todo/controller"
+	"github.com/kazuzaku-dev/todo-grpc-go/internal/todo/infrastructure/database"
+	"github.com/kazuzaku-dev/todo-grpc-go/internal/todo/infrastructure/repository_impl"
+	"github.com/kazuzaku-dev/todo-grpc-go/internal/todo/usecase/command"
 )
 
 // Injectors from wire.go:
 
 func InitUserService() (*controller.UserServiceHandler, error) {
-	userServiceHandler := controller.NewUserServiceHandler()
+	db, err := database.NewDB()
+	if err != nil {
+		return nil, err
+	}
+	userRepositoryImpl := repository_impl.NewUserRepositoryImpl(db)
+	createUserCommandHandler := command.NewCreateUserCommandHandler(userRepositoryImpl)
+	userServiceHandler := controller.NewUserServiceHandler(createUserCommandHandler)
 	return userServiceHandler, nil
 }
 

@@ -57,10 +57,6 @@ func registerService(server *grpc.Server) {
 	pb.RegisterToDoServieServer(server, todoServie)
 }
 
-func InitUserService() {
-	panic("unimplemented")
-}
-
 // エラーハンドリング用のInterceptor
 func errorHandlingUnaryInterceptor(
 	ctx context.Context,
