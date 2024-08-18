@@ -2,12 +2,18 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
+	"runtime"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
+
+	pb "github.com/kazuzaku-dev/todo-grpc-go/grpc"
+	"github.com/kazuzaku-dev/todo-grpc-go/internal/todo"
 )
 
 func main() {
@@ -38,7 +44,17 @@ func main() {
 
 // サーバーにgRPCサービスを登録する
 func registerService(server *grpc.Server) {
-	// not implemented yet.
+	userServie, err := todo.InitUserService()
+	if err != nil {
+		log.Fatalf("failed to create user service: %v", err)
+	}
+	pb.RegisterUserServiceServer(server, userServie)
+
+	todoServie, err := todo.InitTodoService()
+	if err != nil {
+		log.Fatalf("failed to create todo service: %v", err)
+	}
+	pb.RegisterToDoServieServer(server, todoServie)
 }
 
 // エラーハンドリング用のInterceptor
@@ -48,11 +64,28 @@ func errorHandlingUnaryInterceptor(
 	info *grpc.UnaryServerInfo,
 	handler grpc.UnaryHandler,
 ) (resp interface{}, err error) {
+	log.Printf("Received request for method: %s", info.FullMethod)
+	log.Printf("Received request param: %s", req)
+
+	defer func() {
+		// panicが発生した場合の処理
+		if r := recover(); r != nil {
+			// スタックトレースを取得してログに出力
+			buf := make([]byte, 1<<16)
+			stackSize := runtime.Stack(buf, false)
+			fmt.Printf("panic recovered: %s\nStack trace:\n%s\n", r, buf[:stackSize])
+
+			// クライアントにエラーレスポンスを返す
+			err = status.Errorf(codes.Internal, "Internal server error")
+		}
+	}()
 	resp, err = handler(ctx, req)
 	if err != nil {
 		log.Printf("RPC failed with error: %v", err)
 		return nil, status.Errorf(status.Code(err), "RPC error: %v", err)
 	}
+
+	log.Printf("Completed request for method: %s", info.FullMethod)
 	return resp, nil
 }
 
@@ -63,10 +96,14 @@ func errorHandlingStreamInterceptor(
 	info *grpc.StreamServerInfo,
 	handler grpc.StreamHandler,
 ) error {
+	log.Printf("Received streaming request for method: %s", info.FullMethod)
+
 	err := handler(srv, ss)
 	if err != nil {
 		log.Printf("RPC failed with error: %v", err)
 		return status.Errorf(status.Code(err), "RPC error: %v", err)
 	}
+
+	log.Printf("Completed streaming request for method: %s", info.FullMethod)
 	return nil
 }
