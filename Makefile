@@ -32,3 +32,7 @@ db-destroy: ## DB用Dockerコンテナを破棄する
 .PHONY: open-grpcui
 open-grpcui: ## gRPC-UIを開く
 	grpcui -plaintext localhost:50051
+
+.PHONY: gen-gorm
+gen-gorm: ## Gormのモデルを生成する
+	go run scripts/gen-gorm.go
