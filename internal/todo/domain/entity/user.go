@@ -5,10 +5,10 @@ import (
 )
 
 type User struct {
-	userID   string
-	name     string
-	email    string
-	password string
+	UserID   string
+	Name     string
+	Email    string
+	Password string
 }
 
 // ユーザーエンティティを生成する
@@ -20,23 +20,10 @@ func NewUser(name, email, password string) *User {
 	userID := util.NewULID()
 
 	return &User{
-		userID:   userID,
-		name:     name,
-		email:    email,
-		password: password,
-	}
-}
-
-func (u *User) GetUserID() string {
-	return u.userID
-}
-
-func (u *User) copy() *User {
-	return &User{
-		userID:   u.userID,
-		name:     u.name,
-		email:    u.email,
-		password: u.password,
+		UserID:   userID,
+		Name:     name,
+		Email:    email,
+		Password: password,
 	}
 }
 
@@ -45,10 +32,12 @@ func (u *User) Update(name, email, password string) *User {
 	// 今回は省略
 
 	// userIDは変更しない
-	updatedUser := u.copy()
-	updatedUser.name = name
-	updatedUser.email = email
-	updatedUser.password = password
+	updatedUser := &User{
+		UserID:   u.UserID,
+		Name:     name,
+		Email:    email,
+		Password: password,
+	}
 
 	return updatedUser
 }

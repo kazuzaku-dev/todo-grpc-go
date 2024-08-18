@@ -64,6 +64,9 @@ func errorHandlingUnaryInterceptor(
 	info *grpc.UnaryServerInfo,
 	handler grpc.UnaryHandler,
 ) (resp interface{}, err error) {
+	log.Printf("Received request for method: %s", info.FullMethod)
+	log.Printf("Received request param: %s", req)
+
 	defer func() {
 		// panicが発生した場合の処理
 		if r := recover(); r != nil {
@@ -81,6 +84,8 @@ func errorHandlingUnaryInterceptor(
 		log.Printf("RPC failed with error: %v", err)
 		return nil, status.Errorf(status.Code(err), "RPC error: %v", err)
 	}
+
+	log.Printf("Completed request for method: %s", info.FullMethod)
 	return resp, nil
 }
 
@@ -91,10 +96,14 @@ func errorHandlingStreamInterceptor(
 	info *grpc.StreamServerInfo,
 	handler grpc.StreamHandler,
 ) error {
+	log.Printf("Received streaming request for method: %s", info.FullMethod)
+
 	err := handler(srv, ss)
 	if err != nil {
 		log.Printf("RPC failed with error: %v", err)
 		return status.Errorf(status.Code(err), "RPC error: %v", err)
 	}
+
+	log.Printf("Completed streaming request for method: %s", info.FullMethod)
 	return nil
 }

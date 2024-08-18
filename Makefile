@@ -34,5 +34,9 @@ open-grpcui: ## gRPC-UIを開く
 	grpcui -plaintext localhost:50051
 
 .PHONY: gen-gorm
-gen-gorm: ## Gormのモデルを生成する
-	go run scripts/gen-gorm.go
+gen-gorm: ## GormのModelとDAOを自動生成する
+	go run scripts/generate_models.go
+
+.PHONY: wire
+wire: ## wireを実行する
+	wire internal/todo/wire.go

@@ -22,7 +22,8 @@ func InitUserService() (*controller.UserServiceHandler, error) {
 	}
 	userRepositoryImpl := repository_impl.NewUserRepositoryImpl(db)
 	createUserCommandHandler := command.NewCreateUserCommandHandler(userRepositoryImpl)
-	userServiceHandler := controller.NewUserServiceHandler(createUserCommandHandler)
+	updateUserCommandHandler := command.NewUpdateUserCommandHandler(userRepositoryImpl)
+	userServiceHandler := controller.NewUserServiceHandler(createUserCommandHandler, updateUserCommandHandler)
 	return userServiceHandler, nil
 }
 

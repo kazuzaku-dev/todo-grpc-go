@@ -11,4 +11,5 @@ import (
 var UserCommandSet = wire.NewSet(
 	repository_impl.UserRepositorySet,
 	NewCreateUserCommandHandler,
+	NewUpdateUserCommandHandler,
 )

@@ -27,7 +27,8 @@ func main() {
 
 	// ジェネレータを作成
 	g := gen.NewGenerator(gen.Config{
-		OutPath: "internal/generated/gorm/model", // 生成されたファイルを出力するパス
+		OutPath: "internal/generated/gorm/dao", // 生成されたファイルを出力するパス
+		Mode:    gen.WithoutContext | gen.WithDefaultQuery | gen.WithQueryInterface,
 	})
 
 	// 接続されたデータベースに基づいてモデルを自動生成
@@ -40,7 +41,10 @@ func main() {
 	})
 
 	// すべてのテーブルに対応するモデルを生成
-	g.GenerateAllTable()
+	models := g.GenerateAllTable()
+
+	// モデルに基本的なメソッドを追加
+	g.ApplyBasic(models...)
 
 	// ファイルを出力
 	g.Execute()

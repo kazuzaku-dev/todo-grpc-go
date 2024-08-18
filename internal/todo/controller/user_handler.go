@@ -11,15 +11,18 @@ import (
 type UserServiceHandler struct {
 	pb.UnimplementedUserServiceServer
 	createCommand *command.CreateUserCommandHandler
+	updateCommand *command.UpdateUserCommandHandler
 }
 
 var _ pb.UserServiceServer = (*UserServiceHandler)(nil)
 
 func NewUserServiceHandler(
 	createCommand *command.CreateUserCommandHandler,
+	updateCommand *command.UpdateUserCommandHandler,
 ) *UserServiceHandler {
 	return &UserServiceHandler{
 		createCommand: createCommand,
+		updateCommand: updateCommand,
 	}
 }
 
@@ -38,8 +41,20 @@ func (handler *UserServiceHandler) Create(ctx context.Context, req *pb.User) (*p
 	}, nil
 }
 
-func (handler *UserServiceHandler) Update(context.Context, *pb.User) (*pb.UpdateUserResponse, error) {
-	return &pb.UpdateUserResponse{}, nil
+func (handler *UserServiceHandler) Update(ctx context.Context, req *pb.User) (*pb.UpdateUserResponse, error) {
+	id, error := handler.updateCommand.Handle(context.Background(), &command.UpdateUserCommand{
+		UserID:   req.Id,
+		Name:     req.Name,
+		Email:    req.Email,
+		Password: req.Password,
+	})
+	if error != nil {
+		log.Fatalf("failed to update user: %v", error)
+		return nil, error
+	}
+	return &pb.UpdateUserResponse{
+		Id: id,
+	}, nil
 }
 
 func (handler *UserServiceHandler) Delete(context.Context, *pb.User) (*pb.DeleteUserResponse, error) {

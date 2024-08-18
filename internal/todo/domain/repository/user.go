@@ -10,5 +10,5 @@ type UserRepository interface {
 	Create(ctx context.Context, user *entity.User) (string, error)
 	Update(ctx context.Context, user *entity.User) (string, error)
 	Delete(ctx context.Context, userID string) (string, error)
-	Get(ctx context.Context, userID string) (*entity.User, error)
+	FindByID(ctx context.Context, userID string) (*entity.User, error)
 }
